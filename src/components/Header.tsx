@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { ChevronDown } from "lucide-react";
+import { Link } from "react-router-dom";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
 
 const Header = () => {
@@ -40,12 +41,16 @@ const Header = () => {
           {/* Right side buttons */}
           <div className="flex items-center space-x-3">
             <ThemeToggle />
-            <Button variant="ghost" size="default">
-              Log in
-            </Button>
-            <Button variant="default" size="default">
-              Sign up
-            </Button>
+            <Link to="/login" className="text-sm font-medium text-foreground hover:text-primary transition-colors">
+              <Button variant="ghost" size="default">
+                Log in
+              </Button>
+            </Link>
+            <Link to="/signup" className="text-sm font-medium text-foreground hover:text-primary transition-colors">
+              <Button variant="default" size="default">
+                Sign up
+              </Button>
+            </Link>
           </div>
         </div>
       </div>

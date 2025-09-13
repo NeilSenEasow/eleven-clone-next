@@ -33,6 +33,11 @@ async def setup_database():
         await onboarding_profiles_collection.create_index("personalDetails.email", unique=True)
         await onboarding_profiles_collection.create_index("createdAt")
         
+        # Users collection
+        users_collection = db.users
+        await users_collection.create_index("email", unique=True)
+        await users_collection.create_index("createdAt")
+        
         print("Collections created successfully!")
         
         # Insert sample audio URLs
@@ -73,9 +78,11 @@ async def setup_database():
         # Count documents
         audio_count = await audio_urls_collection.count_documents({})
         profiles_count = await onboarding_profiles_collection.count_documents({})
+        users_count = await users_collection.count_documents({})
         
         print(f"Audio URLs count: {audio_count}")
         print(f"Onboarding profiles count: {profiles_count}")
+        print(f"Users count: {users_count}")
         
         print("Database setup completed successfully!")
         
