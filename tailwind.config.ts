@@ -54,6 +54,7 @@ export default {
         'gradient-primary': 'var(--gradient-primary)',
         'gradient-secondary': 'var(--gradient-secondary)',
         'gradient-hero': 'var(--gradient-hero)',
+        'gradient-wave': 'var(--gradient-wave)',
       },
       boxShadow: {
         'glow': 'var(--shadow-glow)',
