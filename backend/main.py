@@ -1,22 +1,25 @@
 from fastapi import FastAPI, HTTPException, Query, Request, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, Field
 from motor.motor_asyncio import AsyncIOMotorClient
 from bson import ObjectId
-from typing import Optional
-from datetime import datetime, timedelta
+from typing import Optional, Dict, Any
 import bcrypt
 import os
 from dotenv import load_dotenv
 import uvicorn
 from jose import JWTError, jwt
+from datetime import datetime, timedelta
 
-# Load environment variables
+# Load environment variables from .env file
 load_dotenv()
 
+# MongoDB Configuration from environment variables
 MONGODB_URL = os.getenv("MONGODB_URL")
 DATABASE_NAME = os.getenv("DATABASE_NAME", "eleven_clone")
+
+# JWT Configuration from environment variables
 JWT_SECRET_KEY = os.getenv("JWT_SECRET_KEY")
 JWT_ALGORITHM = os.getenv("JWT_ALGORITHM", "HS256")
 JWT_ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("JWT_ACCESS_TOKEN_EXPIRE_MINUTES", "30"))
@@ -43,6 +46,8 @@ app.add_middleware(
 # ---------------------------
 # DB connection lifecycle
 # ---------------------------
+# DeprecationWarning: This on_event decorator is deprecated. For production,
+# use the newer 'lifespan' event handlers as recommended in FastAPI's docs.
 @app.on_event("startup")
 async def startup_db_client():
     app.state.client = AsyncIOMotorClient(MONGODB_URL)
@@ -91,7 +96,7 @@ class UserLogin(BaseModel):
 
 class Token(BaseModel):
     access_token: str
-    token_type: str
+    token_type: str = "bearer"
     user_id: str
     name: str
     email: str
@@ -147,6 +152,9 @@ async def health_check():
 # ---------------------------
 @app.get("/api/audio", response_model=AudioResponse)
 async def get_audio_url(request: Request, lang: str = Query(..., description="Language code (e.g., 'english')")):
+    """
+    Get audio URL for a specific language.
+    """
     db = request.app.state.db
     audio_doc = await db.audio_urls.find_one({"language": lang.lower()})
     if not audio_doc:
@@ -164,6 +172,9 @@ async def get_audio_url(request: Request, lang: str = Query(..., description="La
 # ---------------------------
 @app.post("/api/onboarding", response_model=OnboardingResponse)
 async def create_onboarding_profile(request: Request, data: OnboardingData):
+    """
+    Create a new onboarding profile.
+    """
     db = request.app.state.db
     profile_doc = {
         "theme": data.theme,
@@ -189,6 +200,9 @@ async def create_onboarding_profile(request: Request, data: OnboardingData):
 
 @app.get("/api/onboarding/{user_id}")
 async def get_onboarding_profile(request: Request, user_id: str):
+    """
+    Get onboarding profile by user ID.
+    """
     db = request.app.state.db
     profile = await db.onboarding_profiles.find_one({"_id": ObjectId(user_id)})
     if not profile:
@@ -200,12 +214,15 @@ async def get_onboarding_profile(request: Request, user_id: str):
 # ---------------------------
 # AUTH ROUTES
 # ---------------------------
-@app.post("/api/auth/signup")
+@app.post("/api/auth/signup", response_model=Dict[str, str])
 async def signup(user: UserSignup, request: Request):
+    """
+    Register a new user, hash their password, and store in the database.
+    """
     db = request.app.state.db
     existing = await db.users.find_one({"email": user.email})
     if existing:
-        raise HTTPException(status_code=400, detail="User already exists")
+        raise HTTPException(status_code=400, detail="User with this email already exists.")
 
     hashed_pw = bcrypt.hashpw(user.password.encode("utf-8"), bcrypt.gensalt())
 
@@ -221,6 +238,9 @@ async def signup(user: UserSignup, request: Request):
 
 @app.post("/api/auth/login", response_model=Token)
 async def login(user: UserLogin, request: Request):
+    """
+    Authenticate a user and return a JWT access token.
+    """
     db = request.app.state.db
     user_doc = await db.users.find_one({"email": user.email})
     if not user_doc:
@@ -236,7 +256,6 @@ async def login(user: UserLogin, request: Request):
     
     return Token(
         access_token=access_token,
-        token_type="bearer",
         user_id=str(user_doc["_id"]),
         name=user_doc["name"],
         email=user_doc["email"]

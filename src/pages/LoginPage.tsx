@@ -9,7 +9,7 @@ import { toast } from '@/hooks/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
-const CORS_ORIGINS = import.meta.env.CORS_ORIGINS || 'http://localhost:8080,http://localhost:3000,https://eleven-clone-next-as4ser03t-neilseneasows-projects.vercel.app/';
+// const CORS_ORIGINS = import.meta.env.CORS_ORIGINS || 'https://eleven-clone-next.vercel.app/';
 
 const LoginPage: React.FC = () => {
   const navigate = useNavigate();
