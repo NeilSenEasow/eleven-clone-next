@@ -8,7 +8,8 @@ import { Eye, EyeOff, Mail, Lock, ArrowRight } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
+// const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
+const API_BASE_URL="http://localhost:8000";
 // const CORS_ORIGINS = import.meta.env.CORS_ORIGINS || 'https://eleven-clone-next.vercel.app/';
 
 const LoginPage: React.FC = () => {
@@ -50,20 +51,20 @@ const LoginPage: React.FC = () => {
         throw new Error(errorData.detail || "Invalid email or password");
       }
 
-      const data = await response.json();
+      const response_data = await response.json();
 
       // Use the auth context to store user data
       const userData = {
-        id: data.user_id,
-        name: data.name,
-        email: data.email
+        id: response_data.data.user_id,
+        name: response_data.data.name,
+        email: response_data.data.email
       };
 
-      login(data.access_token, userData);
+      login(response_data.data.access_token, userData);
 
       toast({
         title: "Welcome back!",
-        description: data.message || "You have successfully logged in.",
+        description: response_data.message || "You have successfully logged in.",
       });
 
       navigate("/");

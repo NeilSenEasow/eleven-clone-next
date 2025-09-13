@@ -7,7 +7,8 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Eye, EyeOff, Mail, Lock, User, ArrowRight, Check } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
+// const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080';
+const API_BASE_URL="http://localhost:8000";
 // const CORS_ORIGINS = import.meta.env.CORS_ORIGINS || 'https://eleven-clone-next.vercel.app/';
 
 const SignupPage: React.FC = () => {
