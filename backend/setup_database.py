@@ -8,9 +8,13 @@ import asyncio
 import os
 from motor.motor_asyncio import AsyncIOMotorClient
 from datetime import datetime
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
 
 # MongoDB configuration
-MONGODB_URL = os.getenv("MONGODB_URL", "mongodb://localhost:27017")
+MONGODB_URL = os.getenv("MONGODB_URL")
 DATABASE_NAME = os.getenv("DATABASE_NAME", "eleven_clone")
 
 async def setup_database():
