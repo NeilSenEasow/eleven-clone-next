@@ -8,6 +8,7 @@ import { Eye, EyeOff, Mail, Lock, User, ArrowRight, Check } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
+const CORS_ORIGINS = import.meta.env.CORS_ORIGINS || 'http://localhost:8080,http://localhost:3000,https://eleven-clone-next-enu4dde7q-neilseneasows-projects.vercel.app';
 
 const SignupPage: React.FC = () => {
   const navigate = useNavigate();
@@ -37,8 +38,11 @@ const SignupPage: React.FC = () => {
       const response = await fetch(`${API_BASE_URL}/api/auth/signup`, {
         method: "POST",
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
+          "Accept": "application/json"
         },
+        credentials: "include",
+        mode: "cors",
         body: JSON.stringify({
           name: formData.name,
           email: formData.email,

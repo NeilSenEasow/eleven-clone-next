@@ -9,6 +9,7 @@ import { toast } from '@/hooks/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
+const CORS_ORIGINS = import.meta.env.CORS_ORIGINS || 'http://localhost:8080,http://localhost:3000,https://eleven-clone-next-enu4dde7q-neilseneasows-projects.vercel.app';
 
 const LoginPage: React.FC = () => {
   const navigate = useNavigate();
@@ -35,7 +36,12 @@ const LoginPage: React.FC = () => {
     try {
       const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { 
+          "Content-Type": "application/json",
+          "Accept": "application/json"
+        },
+        credentials: "include",
+        mode: "cors",
         body: JSON.stringify(formData)
       });
 
