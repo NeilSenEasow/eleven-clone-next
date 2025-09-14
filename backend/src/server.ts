@@ -1,13 +1,13 @@
-import express from 'express';
-import cors from 'cors';
-import helmet from 'helmet';
-import morgan from 'morgan';
-import dotenv from 'dotenv';
-import { connectDB } from './config/database';
-import { errorHandler } from './middleware/errorHandler';
-import audioRoutes from './routes/audio';
-import onboardingRoutes from './routes/onboarding';
-import authRoutes from './routes/auth';
+import express from "express";
+import cors from "cors";
+import helmet from "helmet";
+import morgan from "morgan";
+import dotenv from "dotenv";
+import { connectDB } from "./config/database";
+import { errorHandler } from "./middleware/errorHandler";
+import audioRoutes from "./routes/audio";
+import onboardingRoutes from "./routes/onboarding";
+import authRoutes from "./routes/auth";
 
 // Load environment variables
 dotenv.config();
@@ -15,57 +15,86 @@ dotenv.config();
 const app = express();
 const PORT = process.env.API_PORT || 8000;
 
-// Security middleware
-app.use(helmet());
+// ----------------- CORS -----------------
+const allowedOrigins = [
+  "http://localhost:8080",  // React dev frontend
+  "http://localhost:3000",  // Vite/CRA
+  "https://your-frontend-domain.com", // production frontend
+];
 
-// CORS configuration
-const corsOrigins = process.env.CORS_ORIGINS?.split(',') || ['http://localhost:3000', 'http://localhost:8080'];
-app.use(cors({
-  origin: "*", // allow any frontend
-  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization"]
-}));
 
-// Body parsing middleware
-app.use(express.json({ limit: '10mb' }));
-app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+app.use(cors({ origin: true, credentials: true }));
 
-// Logging middleware
-app.use(morgan('combined'));
+// const allowedOrigins = [
+//   "http://localhost:8080",
+//   "http://localhost:3000",
+//   "https://your-frontend-domain.com",
+//   "https://eleven-clone-next-frontend.vercel.app" // frontend deployed URL
+// ];
 
-// Connect to MongoDB
+
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error(`CORS not allowed for origin: ${origin}`));
+      }
+    },
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+    credentials: true, // allow cookies/JWT
+  })
+);
+
+// ----------------- SECURITY -----------------
+app.use(
+  helmet({
+    crossOriginResourcePolicy: false, // allow API resources
+    crossOriginEmbedderPolicy: false, // avoid blocking embeds
+  })
+);
+
+// ----------------- BODY PARSING -----------------
+app.use(express.json({ limit: "10mb" }));
+app.use(express.urlencoded({ extended: true, limit: "10mb" }));
+
+// ----------------- LOGGING -----------------
+app.use(morgan("dev"));
+
+// ----------------- DB CONNECTION -----------------
 connectDB();
 
-// Health check routes
-app.get('/', (req, res) => {
-  res.json({ message: 'Eleven Clone API is running!' });
+// ----------------- ROUTES -----------------
+app.get("/", (req, res) => {
+  res.json({ message: "Eleven Clone API is running!" });
 });
 
-app.get('/health', (req, res) => {
-  res.json({ 
-    status: 'healthy', 
+app.get("/health", (req, res) => {
+  res.json({
+    status: "healthy",
     timestamp: new Date().toISOString(),
-    uptime: process.uptime()
+    uptime: process.uptime(),
   });
 });
 
-// API Routes
-app.use('/api/audio', audioRoutes);
-app.use('/api/onboarding', onboardingRoutes);
-app.use('/api/auth', authRoutes);
+app.use("/api/audio", audioRoutes);
+app.use("/api/onboarding", onboardingRoutes);
+app.use("/api/auth", authRoutes);
 
-// Error handling middleware (must be last)
+// ----------------- ERROR HANDLING -----------------
 app.use(errorHandler);
 
-// 404 handler
-app.use('*', (req, res) => {
-  res.status(404).json({ message: 'Route not found' });
+// ----------------- 404 HANDLER -----------------
+app.use("*", (req, res) => {
+  res.status(404).json({ message: "Route not found" });
 });
 
-// Start server
+// ----------------- START SERVER -----------------
 app.listen(PORT, () => {
   console.log(`✅ Server running on port ${PORT}`);
-  console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);
+  console.log(`🌍 Environment: ${process.env.NODE_ENV || "development"}`);
 });
 
 export default app;
