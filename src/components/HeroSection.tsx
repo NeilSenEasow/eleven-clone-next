@@ -1,8 +1,19 @@
 import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router-dom";
 
-const HeroSection = () => {
+interface HeroSectionProps {
+  className?: string;
+}
+
+const HeroSection = ({ className }: HeroSectionProps) => {
+  const navigate = useNavigate();
+
+  const handleSignupClick = () => {
+    navigate('/splash');
+  };
+
   return (
-    <section className="relative py-20 px-6">
+    <section className={`relative py-20 px-6 ${className || ''}`}>
       <div className="container mx-auto text-center">
         <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-foreground mb-6 max-w-4xl mx-auto leading-tight">
           The most realistic voice AI platform
@@ -12,7 +23,7 @@ const HeroSection = () => {
           low-latency conversational agents to the leading AI voice generator for voiceovers and audiobooks.
         </p>
         <div className="flex items-center justify-center space-x-4">
-          <Button variant="default" size="lg" className="px-8">
+          <Button variant="default" size="lg" className="px-8" onClick={handleSignupClick}>
             SIGN UP
           </Button>
           <Button variant="outline" size="lg" className="px-8">

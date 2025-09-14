@@ -9,7 +9,7 @@ const Index = () => {
     <div className="min-h-screen bg-background relative">
       <Header />
       <main className="relative z-10">
-        <HeroSection />
+        <HeroSection className="mb-12"/>
         <ProductCategories />
         <div className="container mx-auto px-6 py-12">
           <VoiceLabInterface />

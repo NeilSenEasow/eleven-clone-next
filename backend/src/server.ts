@@ -13,7 +13,7 @@ import authRoutes from './routes/auth';
 dotenv.config();
 
 const app = express();
-const PORT = process.env.API_PORT || 8000;
+const PORT = process.env.PORT || process.env.API_PORT || 8000;
 
 // Security middleware
 app.use(helmet());

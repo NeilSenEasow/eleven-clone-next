@@ -8,9 +8,7 @@ import { Eye, EyeOff, Mail, Lock, ArrowRight } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
 
-// const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
-const API_BASE_URL="http://localhost:8000";
-// const CORS_ORIGINS = import.meta.env.CORS_ORIGINS || 'https://eleven-clone-next.vercel.app/';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://eleven-clone-next-backend.vercel.app';
 
 const LoginPage: React.FC = () => {
   const navigate = useNavigate();

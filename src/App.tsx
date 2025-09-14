@@ -9,6 +9,7 @@ import Index from "./pages/Index";
 import Onboarding from "./pages/Onboarding";
 import LoginPage from "./pages/LoginPage";
 import SignupPage from "./pages/SignupPage";
+import SplashScreen from "./pages/SplashScreen";
 import NotFound from "./pages/NotFound";
 import TextToSpeech from "./pages/TextToSpeech";
 import VoiceCloning from "./pages/VoiceCloning";
@@ -30,6 +31,7 @@ const App = () => (
           <BrowserRouter>
             <Routes>
               <Route path="/" element={<Index />} />
+              <Route path="/splash" element={<SplashScreen />} />
               <Route path="/onboarding" element={<Onboarding />} />
               <Route path="/login" element={<LoginPage />} />
               <Route path="/signup" element={<SignupPage />} />

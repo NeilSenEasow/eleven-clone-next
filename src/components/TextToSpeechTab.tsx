@@ -84,20 +84,40 @@ const TextToSpeechTab: React.FC = () => {
     audio.play();
   };
 
-  const handleDownloadAudio = () => {
+  const handleDownloadAudio = async () => {
     if (!audioUrl) return;
     
-    const link = document.createElement('a');
-    link.href = audioUrl;
-    link.download = `speech_${selectedLanguage}_${Date.now()}.mp3`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    
-    toast({
-      title: "Download Started",
-      description: "Your audio file is being downloaded.",
-    });
+    try {
+      // Fetch the audio file
+      const response = await fetch(audioUrl);
+      if (!response.ok) throw new Error('Failed to fetch audio file');
+      
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      
+      // Create download link
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `speech_${selectedLanguage}_${Date.now()}.mp3`;
+      document.body.appendChild(link);
+      link.click();
+      
+      // Cleanup
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+      
+      toast({
+        title: "Download Started",
+        description: "Your audio file is being downloaded.",
+      });
+    } catch (error) {
+      console.error('Download error:', error);
+      toast({
+        title: "Download Failed",
+        description: "Failed to download the audio file. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
 
   return (
