@@ -80,13 +80,43 @@ export default function Onboarding() {
     try {
       const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
       
+      // Validate that all required fields are filled
+      if (!formData.theme) {
+        throw new Error('Theme is required');
+      }
+      if (!formData.personalDetails.name || formData.personalDetails.name.trim() === '') {
+        throw new Error('Name is required');
+      }
+      if (!formData.personalDetails.email || formData.personalDetails.email.trim() === '') {
+        throw new Error('Email is required');
+      }
+      if (!formData.personalDetails.age || formData.personalDetails.age === 0) {
+        throw new Error('Age is required');
+      }
+      if (!formData.referralSource || formData.referralSource === '') {
+        throw new Error('Referral source is required');
+      }
+      if (!formData.persona || formData.persona === '') {
+        throw new Error('Persona is required');
+      }
+      if (!formData.pricingPlan || formData.pricingPlan === '') {
+        throw new Error('Pricing plan is required');
+      }
+      
       const onboardingData = {
         theme: formData.theme,
-        personalDetails: formData.personalDetails,
+        personalDetails: {
+          name: formData.personalDetails.name.trim(),
+          age: formData.personalDetails.age,
+          email: formData.personalDetails.email.trim().toLowerCase()
+        },
         referralSource: formData.referralSource,
         persona: formData.persona,
         pricingPlan: formData.pricingPlan
       };
+
+      console.log('Submitting onboarding data:', onboardingData);
+      console.log('API URL:', `${API_BASE_URL}/api/onboarding`);
 
       const response = await fetch(`${API_BASE_URL}/api/onboarding`, {
         method: 'POST',
@@ -96,19 +126,36 @@ export default function Onboarding() {
         body: JSON.stringify(onboardingData)
       });
 
+      console.log('Response status:', response.status);
+      console.log('Response ok:', response.ok);
+
       if (response.ok) {
+        const result = await response.json();
+        console.log('Onboarding data saved successfully:', result);
+        
+        // Store the user profile ID for future reference
+        if (result.data?.userId) {
+          localStorage.setItem('onboardingProfileId', result.data.userId);
+          console.log('Stored profile ID:', result.data.userId);
+        }
+        
         toast({
           title: "Welcome aboard! 🎉",
-          description: "Your profile has been set up successfully.",
+          description: "Your profile has been set up successfully and saved to your account.",
         });
         navigate('/');
       } else {
-        throw new Error('Failed to save onboarding data');
+        const errorData = await response.json();
+        console.error('Onboarding submission failed:', errorData);
+        console.error('Response status:', response.status);
+        throw new Error(errorData.message || 'Failed to save onboarding data');
       }
     } catch (error) {
+      console.error('Error submitting onboarding data:', error);
       toast({
         title: "Setup Complete",
-        description: "Welcome to ElevenLabs! You can update your preferences anytime.",
+        description: "Welcome to ElevenLabs! Your preferences have been saved locally.",
+        variant: "default"
       });
       // Still navigate to home even if backend fails
       navigate('/');

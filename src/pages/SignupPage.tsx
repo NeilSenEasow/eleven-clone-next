@@ -6,6 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Link, useNavigate } from 'react-router-dom';
 import { Eye, EyeOff, Mail, Lock, User, ArrowRight, Check } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
+import { useAuth } from '@/contexts/AuthContext';
 
 // const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080';
 const API_BASE_URL="http://localhost:8000";
@@ -13,6 +14,7 @@ const API_BASE_URL="http://localhost:8000";
 
 const SignupPage: React.FC = () => {
   const navigate = useNavigate();
+  const { login } = useAuth();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -57,12 +59,25 @@ const SignupPage: React.FC = () => {
         throw new Error(data.detail || "Signup failed");
       }
 
-      toast({
-        title: "Account Created 🎉",
-        description: "Welcome! Let's get you set up with a quick onboarding.",
-      });
+      // Store authentication data from successful signup
+      if (data.success && data.data.access_token) {
+        const userData = {
+          id: data.data.user_id,
+          name: data.data.name,
+          email: data.data.email
+        };
+        
+        login(data.data.access_token, userData);
+        
+        toast({
+          title: "Account Created 🎉",
+          description: "Welcome! Let's get you set up with a quick onboarding.",
+        });
 
-      navigate("/onboarding"); // Redirect to onboarding after signup
+        navigate("/onboarding"); // Redirect to onboarding after signup
+      } else {
+        throw new Error("Signup succeeded but authentication data missing");
+      }
     } catch (error) {
       toast({
         title: "Signup Failed",

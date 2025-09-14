@@ -61,11 +61,18 @@ router.post('/signup',
 
       const savedUser = await user.save();
 
+      // Generate JWT token for immediate login after signup
+      const accessToken = generateAccessToken((savedUser._id as mongoose.Types.ObjectId).toString());
+
       res.status(201).json({
         success: true,
         data: {
           message: 'User created successfully',
-          userId: (savedUser._id as mongoose.Types.ObjectId).toString()
+          access_token: accessToken,
+          token_type: 'bearer',
+          user_id: (savedUser._id as mongoose.Types.ObjectId).toString(),
+          name: savedUser.name,
+          email: savedUser.email
         }
       });
     } catch (error) {
