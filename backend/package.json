@@ -3,14 +3,16 @@
   "version": "1.0.0",
   "description": "Express.js backend for ElevenLabs clone application",
   "main": "dist/server.js",
+  "types": "dist/server.d.ts",
   "scripts": {
     "start": "node dist/server.js",
     "dev": "nodemon --exec ts-node src/server.ts",
-    "build": "npx tsc",
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "vercel-build": "node vercel-build.js",
-    "now-build": "node vercel-build.js",
-    "clean": "rimraf dist"
+    "build": "tsc && tsc-alias",
+    "vercel-build": "npm install && npm run build",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "engines": {
+    "node": ">=14.x"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
@@ -33,6 +35,7 @@
     "nodemon": "^3.0.2",
     "rimraf": "^5.0.5",
     "ts-node": "^10.9.2",
+    "tsc-alias": "^1.8.16",
     "typescript": "^5.3.3"
   },
   "keywords": [
