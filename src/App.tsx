@@ -10,6 +10,13 @@ import Onboarding from "./pages/Onboarding";
 import LoginPage from "./pages/LoginPage";
 import SignupPage from "./pages/SignupPage";
 import NotFound from "./pages/NotFound";
+import TextToSpeech from "./pages/TextToSpeech";
+import VoiceCloning from "./pages/VoiceCloning";
+import VoiceLibrary from "./pages/VoiceLibrary";
+import Projects from "./pages/Projects";
+import ConversationalAI from "./pages/ConversationalAI";
+import Enterprise from "./pages/Enterprise";
+import Pricing from "./pages/Pricing";
 
 const queryClient = new QueryClient();
 
@@ -26,6 +33,20 @@ const App = () => (
               <Route path="/onboarding" element={<Onboarding />} />
               <Route path="/login" element={<LoginPage />} />
               <Route path="/signup" element={<SignupPage />} />
+              
+              {/* Creative Platform Routes */}
+              <Route path="/text-to-speech" element={<TextToSpeech />} />
+              <Route path="/voice-cloning" element={<VoiceCloning />} />
+              <Route path="/voice-library" element={<VoiceLibrary />} />
+              <Route path="/projects" element={<Projects />} />
+              
+              {/* Agents Platform Routes */}
+              <Route path="/conversational-ai" element={<ConversationalAI />} />
+              
+              {/* Main Navigation Routes */}
+              <Route path="/enterprise" element={<Enterprise />} />
+              <Route path="/pricing" element={<Pricing />} />
+              
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>

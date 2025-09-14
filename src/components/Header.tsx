@@ -24,6 +24,41 @@ const Header = () => {
     { label: "Pricing", hasDropdown: false },
   ];
 
+  const getDropdownItems = (label: string): { name: string; path: string }[] => {
+    switch (label) {
+      case "Creative Platform":
+        return [
+          { name: "Text to Speech", path: "/text-to-speech" },
+          { name: "Voice Cloning", path: "/voice-cloning" },
+          { name: "Voice Library", path: "/voice-library" },
+          { name: "Projects", path: "/projects" }
+        ];
+      case "Agents Platform":
+        return [
+          { name: "Conversational AI", path: "/conversational-ai" },
+          { name: "Voice Agents", path: "#" },
+          { name: "Phone Calling", path: "#" },
+          { name: "Integration", path: "#" }
+        ];
+      case "Developers":
+        return [
+          { name: "API Documentation", path: "#" },
+          { name: "SDKs", path: "#" },
+          { name: "Tutorials", path: "#" },
+          { name: "Community", path: "#" }
+        ];
+      case "Resources":
+        return [
+          { name: "Blog", path: "#" },
+          { name: "Case Studies", path: "#" },
+          { name: "Help Center", path: "#" },
+          { name: "Voice Lab", path: "#" }
+        ];
+      default:
+        return [];
+    }
+  };
+
   return (
     <header className="w-full border-b border-border bg-background/95 backdrop-blur-sm sticky top-0 z-50">
       <div className="container mx-auto px-6 py-4">
@@ -39,13 +74,42 @@ const Header = () => {
           {/* Navigation */}
           <nav className="hidden lg:flex items-center space-x-8">
             {navItems.map((item) => (
-              <button
-                key={item.label}
-                className="flex items-center space-x-1 text-sm font-medium text-foreground hover:text-primary transition-colors"
-              >
-                <span>{item.label}</span>
-                {item.hasDropdown && <ChevronDown className="w-4 h-4" />}
-              </button>
+              item.hasDropdown ? (
+                <DropdownMenu key={item.label}>
+                  <DropdownMenuTrigger asChild>
+                    <Button 
+                      variant="ghost" 
+                      className="flex items-center space-x-1 text-sm font-medium text-foreground hover:text-foreground/80 hover:bg-transparent transition-colors h-auto p-0"
+                    >
+                      <span>{item.label}</span>
+                      <ChevronDown className="w-4 h-4" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="start" className="w-56">
+                    <DropdownMenuLabel>{item.label}</DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    {getDropdownItems(item.label).map((dropdownItem, index) => (
+                      <DropdownMenuItem key={index} className="cursor-pointer">
+                        <Link to={dropdownItem.path} className="w-full">
+                          {dropdownItem.name}
+                        </Link>
+                      </DropdownMenuItem>
+                    ))}
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              ) : (
+                <Link
+                  key={item.label}
+                  to={item.label === 'Enterprise' ? '/enterprise' : '/pricing'}
+                >
+                  <Button
+                    variant="ghost"
+                    className="text-sm font-medium text-foreground hover:text-foreground/80 hover:bg-transparent transition-colors h-auto p-0"
+                  >
+                    {item.label}
+                  </Button>
+                </Link>
+              )
             ))}
           </nav>
 
