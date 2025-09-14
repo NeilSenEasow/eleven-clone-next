@@ -18,27 +18,26 @@ const app = express();
 const PORT = process.env.API_PORT || 8000;
 
 // ----------------- CORS -----------------
-const allowedOrigins = [
-  "http://localhost:8080",  // React dev frontend
-  "http://localhost:3000",  // Vite/CRA
-  "https://your-frontend-domain.com", // production frontend
-];
+// const allowedOrigins = [
+//   "http://localhost:8080",  // React dev frontend
+//   "http://localhost:3000",  // Vite/CRA
+//   "https://your-frontend-domain.com", // production frontend
+// ];
 
 
 app.use(cors({ origin: true, credentials: true }));
 
-// const allowedOrigins = [
-//   "http://localhost:8080",
-//   "http://localhost:3000",
-//   "https://your-frontend-domain.com",
-//   "https://eleven-clone-next-frontend.vercel.app" // frontend deployed URL
-// ];
+const corsOrigins = [
+  "http://localhost:8080",
+  "http://localhost:3000",
+  "https://eleven-clone-next.vercel.app/" // frontend deployed URL
+];
 
 
 app.use(
   cors({
     origin: (origin, callback) => {
-      if (!origin || allowedOrigins.includes(origin)) {
+      if (!origin || corsOrigins.includes(origin)) {
         callback(null, true);
       } else {
         callback(new Error(`CORS not allowed for origin: ${origin}`));
