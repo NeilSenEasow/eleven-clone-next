@@ -92,9 +92,12 @@ app.use("*", (req, res) => {
 });
 
 // ----------------- START SERVER -----------------
-app.listen(PORT, () => {
-  console.log(`✅ Server running on port ${PORT}`);
-  console.log(`🌍 Environment: ${process.env.NODE_ENV || "development"}`);
-});
+// Only start the server if not in a serverless environment
+if (process.env.VERCEL !== '1') {
+  app.listen(PORT, () => {
+    console.log(`✅ Server running on port ${PORT}`);
+    console.log(`🌍 Environment: ${process.env.NODE_ENV || "development"}`);
+  });
+}
 
 export default app;
