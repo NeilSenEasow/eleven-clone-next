@@ -6,9 +6,18 @@ import { OnboardingData } from './OnboardingFlow';
 interface UserPersonaStepProps {
   data: OnboardingData;
   onDataChange: (data: Partial<OnboardingData>) => void;
+  isTransitioning?: boolean;
+  selectedOption?: string | null;
+  onOptionSelect?: (option: string) => void;
 }
 
-const UserPersonaStep: React.FC<UserPersonaStepProps> = ({ data, onDataChange }) => {
+const UserPersonaStep: React.FC<UserPersonaStepProps> = ({ 
+  data, 
+  onDataChange, 
+  isTransitioning = false, 
+  selectedOption, 
+  onOptionSelect 
+}) => {
   const personas = [
     {
       id: 'content-creator',
@@ -59,15 +68,25 @@ const UserPersonaStep: React.FC<UserPersonaStepProps> = ({ data, onDataChange })
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {personas.map((persona) => {
           const Icon = persona.icon;
+          const isSelected = selectedOption === persona.id || data.persona === persona.id;
+          const shouldFadeOut = isTransitioning && selectedOption && selectedOption !== persona.id;
+          
+          const handleClick = () => {
+            onOptionSelect?.(persona.id);
+            onDataChange({ persona: persona.id });
+          };
+          
           return (
             <Card
               key={persona.id}
-              className={`cursor-pointer transition-all duration-200 hover:scale-105 ${
-                data.persona === persona.id
-                  ? 'ring-2 ring-purple-500 bg-purple-50'
-                  : 'hover:bg-white/10'
+              className={`cursor-pointer transition-all duration-500 ${
+                shouldFadeOut 
+                  ? 'opacity-20 scale-95 pointer-events-none' 
+                  : isSelected
+                  ? 'ring-2 ring-purple-500 bg-purple-50 scale-105'
+                  : 'hover:bg-white/10 hover:scale-105'
               }`}
-              onClick={() => onDataChange({ persona: persona.id })}
+              onClick={handleClick}
             >
               <CardContent className="p-6">
                 <div className="flex items-start space-x-3 mb-3">

@@ -59,10 +59,10 @@ const SignupPage: React.FC = () => {
 
       toast({
         title: "Account Created 🎉",
-        description: "You can now log in with your new account.",
+        description: "Welcome! Let's get you set up with a quick onboarding.",
       });
 
-      navigate("/login"); // Redirect after signup
+      navigate("/onboarding"); // Redirect to onboarding after signup
     } catch (error) {
       toast({
         title: "Signup Failed",

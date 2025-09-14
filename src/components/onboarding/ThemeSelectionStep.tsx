@@ -7,9 +7,18 @@ import { OnboardingData } from './OnboardingFlow';
 interface ThemeSelectionStepProps {
   data: OnboardingData;
   onDataChange: (data: Partial<OnboardingData>) => void;
+  isTransitioning?: boolean;
+  selectedOption?: string | null;
+  onOptionSelect?: (option: string) => void;
 }
 
-const ThemeSelectionStep: React.FC<ThemeSelectionStepProps> = ({ data, onDataChange }) => {
+const ThemeSelectionStep: React.FC<ThemeSelectionStepProps> = ({ 
+  data, 
+  onDataChange, 
+  isTransitioning = false, 
+  selectedOption, 
+  onOptionSelect 
+}) => {
   const themes = [
     {
       id: 'light',
@@ -32,15 +41,25 @@ const ThemeSelectionStep: React.FC<ThemeSelectionStepProps> = ({ data, onDataCha
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {themes.map((theme) => {
           const Icon = theme.icon;
+          const isSelected = selectedOption === theme.id || data.theme === theme.id;
+          const shouldFadeOut = isTransitioning && selectedOption && selectedOption !== theme.id;
+          
+          const handleClick = () => {
+            onOptionSelect?.(theme.id);
+            onDataChange({ theme: theme.id as 'light' | 'dark' });
+          };
+          
           return (
             <Card
               key={theme.id}
-              className={`cursor-pointer transition-all duration-200 hover:scale-105 ${
-                data.theme === theme.id
-                  ? 'ring-2 ring-purple-500 bg-purple-50'
-                  : 'hover:bg-gray-50'
+              className={`cursor-pointer transition-all duration-500 ${
+                shouldFadeOut 
+                  ? 'opacity-20 scale-95 pointer-events-none' 
+                  : isSelected
+                  ? 'ring-2 ring-purple-500 bg-purple-50 scale-105'
+                  : 'hover:bg-gray-50 hover:scale-105'
               }`}
-              onClick={() => onDataChange({ theme: theme.id as 'light' | 'dark' })}
+              onClick={handleClick}
             >
               <CardContent className="p-6">
                 <div className="flex items-center space-x-3 mb-3">

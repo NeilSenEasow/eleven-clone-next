@@ -6,10 +6,13 @@ import { Check, Star } from 'lucide-react';
 import { Switch } from '@/components/ui/switch';
 
 interface PricingStepProps {
-  onNext: () => void;
+  onNext: (data: any) => void;
   onBack: () => void;
   onUpdate: (data: { selectedPlan: string }) => void;
   selectedPlan: string;
+  isTransitioning?: boolean;
+  selectedOption?: string | null;
+  onOptionSelect?: (option: string) => void;
 }
 
 const plans = [
@@ -58,17 +61,27 @@ const plans = [
   }
 ];
 
-export default function PricingStep({ onNext, onBack, onUpdate, selectedPlan }: PricingStepProps) {
+export default function PricingStep({ 
+  onNext, 
+  onBack, 
+  onUpdate, 
+  selectedPlan, 
+  isTransitioning = false, 
+  selectedOption, 
+  onOptionSelect 
+}: PricingStepProps) {
   const [selected, setSelected] = useState(selectedPlan);
   const [isYearly, setIsYearly] = useState(false);
 
   const handleSelect = (planId: string) => {
     setSelected(planId);
     onUpdate({ selectedPlan: planId });
+    onOptionSelect?.(planId);
+    onNext({ pricingPlan: planId });
   };
 
   const handleComplete = () => {
-    onNext();
+    onNext({ pricingPlan: selected });
   };
 
   const formatPrice = (amount: number) => {
@@ -104,15 +117,20 @@ export default function PricingStep({ onNext, onBack, onUpdate, selectedPlan }: 
       
       <div className="grid md:grid-cols-3 gap-6">
         {plans.map((plan) => {
-          const isSelected = selected === plan.id;
+          const isSelected = selectedOption === plan.id || selected === plan.id;
+          const shouldFadeOut = isTransitioning && selectedOption && selectedOption !== plan.id;
           const price = isYearly ? plan.yearlyPrice : plan.monthlyPrice;
           const period = isYearly ? '/year' : '/month';
           
           return (
             <Card
               key={plan.id}
-              className={`p-6 cursor-pointer transition-all hover:scale-105 relative ${
-                isSelected ? 'ring-2 ring-primary' : ''
+              className={`p-6 cursor-pointer transition-all duration-500 relative ${
+                shouldFadeOut 
+                  ? 'opacity-20 scale-95 pointer-events-none' 
+                  : isSelected 
+                  ? 'ring-2 ring-primary scale-105' 
+                  : 'hover:scale-105'
               } ${plan.popular ? 'border-primary' : ''}`}
               onClick={() => handleSelect(plan.id)}
             >

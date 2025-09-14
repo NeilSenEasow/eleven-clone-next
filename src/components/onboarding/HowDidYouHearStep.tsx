@@ -19,10 +19,13 @@ import {
 } from 'lucide-react';
 
 interface HowDidYouHearStepProps {
-  onNext: () => void;
+  onNext: (data: any) => void;
   onBack: () => void;
   onUpdate: (data: { hearAbout: string }) => void;
   selected: string;
+  isTransitioning?: boolean;
+  selectedOption?: string | null;
+  onOptionSelect?: (option: string) => void;
 }
 
 const options = [
@@ -42,23 +45,33 @@ const options = [
   { id: 'other', label: 'Other', icon: MoreHorizontal },
 ];
 
-export default function HowDidYouHearStep({ onNext, onBack, onUpdate, selected }: HowDidYouHearStepProps) {
+export default function HowDidYouHearStep({ 
+  onNext, 
+  onBack, 
+  onUpdate, 
+  selected, 
+  isTransitioning = false, 
+  selectedOption: propSelectedOption, 
+  onOptionSelect 
+}: HowDidYouHearStepProps) {
   const [selectedOption, setSelectedOption] = useState(selected);
 
   const handleSelect = (option: string) => {
     setSelectedOption(option);
     onUpdate({ hearAbout: option });
+    onOptionSelect?.(option);
+    onNext({ referralSource: option });
   };
 
   const handleNext = () => {
     if (selectedOption) {
-      onNext();
+      onNext({ referralSource: selectedOption });
     }
   };
 
   const handleSkip = () => {
     onUpdate({ hearAbout: 'skipped' });
-    onNext();
+    onNext({ referralSource: 'skipped' });
   };
 
   return (
@@ -68,11 +81,18 @@ export default function HowDidYouHearStep({ onNext, onBack, onUpdate, selected }
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {options.map((option) => {
           const IconComponent = option.icon;
+          const isSelected = propSelectedOption === option.id || selectedOption === option.id;
+          const shouldFadeOut = isTransitioning && propSelectedOption && propSelectedOption !== option.id;
+          
           return (
             <Card
               key={option.id}
-              className={`p-4 cursor-pointer transition-all hover:scale-105 ${
-                selectedOption === option.id ? 'ring-2 ring-primary bg-primary/10' : 'hover:bg-accent'
+              className={`p-4 cursor-pointer transition-all duration-500 ${
+                shouldFadeOut 
+                  ? 'opacity-20 scale-95 pointer-events-none' 
+                  : isSelected
+                  ? 'ring-2 ring-primary bg-primary/10 scale-105'
+                  : 'hover:bg-accent hover:scale-105'
               }`}
               onClick={() => handleSelect(option.id)}
             >

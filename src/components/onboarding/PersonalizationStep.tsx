@@ -5,10 +5,11 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 interface PersonalizationStepProps {
-  onNext: () => void;
+  onNext: (data: any) => void;
   onBack: () => void;
   onUpdate: (data: { name?: string; email?: string; age?: string }) => void;
   formData: { name: string; email: string; age: string };
+  isTransitioning?: boolean;
 }
 
 export default function PersonalizationStep({ onNext, onBack, onUpdate, formData }: PersonalizationStepProps) {
@@ -18,7 +19,7 @@ export default function PersonalizationStep({ onNext, onBack, onUpdate, formData
 
   const handleNext = () => {
     onUpdate({ name, email, age });
-    onNext();
+    onNext({ personalDetails: { name, email, age: parseInt(age) || 25 } });
   };
 
   const isValid = name.trim() && email.trim() && age;
