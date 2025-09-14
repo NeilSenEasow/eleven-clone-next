@@ -1,4 +1,4 @@
-import express from "express";
+import express, { Request, Response } from "express";
 import cors from "cors";
 import helmet from "helmet";
 import morgan from "morgan";
@@ -9,6 +9,7 @@ import audioRoutes from "./routes/audio";
 import onboardingRoutes from "./routes/onboarding";
 import authRoutes from "./routes/auth";
 
+// Load environment variables
 dotenv.config();
 
 const app = express();
@@ -18,7 +19,7 @@ const PORT = process.env.API_PORT || 8000;
 const corsOrigins = [
   "http://localhost:8080",
   "http://localhost:3000",
-  "https://eleven-clone-next.vercel.app" // fixed: no trailing slash
+  "https://eleven-clone-next.vercel.app"
 ];
 
 app.use(
@@ -32,15 +33,15 @@ app.use(
     },
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
-    credentials: true,
+    credentials: true, // allow cookies/JWT
   })
 );
 
 // ----------------- SECURITY -----------------
 app.use(
   helmet({
-    crossOriginResourcePolicy: false,
-    crossOriginEmbedderPolicy: false,
+    crossOriginResourcePolicy: false, // allow API resources
+    crossOriginEmbedderPolicy: false, // avoid blocking embeds
   })
 );
 
@@ -55,11 +56,11 @@ app.use(morgan("dev"));
 connectDB();
 
 // ----------------- ROUTES -----------------
-app.get("/", (req, res) => {
+app.get("/", (req: Request, res: Response) => {
   res.json({ message: "Eleven Clone API is running!" });
 });
 
-app.get("/health", (req, res) => {
+app.get("/health", (req: Request, res: Response) => {
   res.json({
     status: "healthy",
     timestamp: new Date().toISOString(),
@@ -75,11 +76,12 @@ app.use("/api/auth", authRoutes);
 app.use(errorHandler);
 
 // ----------------- 404 HANDLER -----------------
-app.use("*", (req, res) => {
+app.use("*", (req: Request, res: Response) => {
   res.status(404).json({ message: "Route not found" });
 });
 
 // ----------------- START SERVER -----------------
+// Only start the server if not in a serverless environment
 if (process.env.VERCEL !== "1") {
   app.listen(PORT, () => {
     console.log(`✅ Server running on port ${PORT}`);
