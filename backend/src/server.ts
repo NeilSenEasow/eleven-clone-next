@@ -13,38 +13,19 @@ import authRoutes from './routes/auth';
 dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT || process.env.API_PORT || 8000;
+const PORT = process.env.API_PORT || 8000;
 
 // Security middleware
 app.use(helmet());
 
 // CORS configuration
-const corsOptions = {
-  origin: function (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) {
-    const allowedOrigins = process.env.CORS_ORIGINS?.split(',') || [
-      'http://localhost:3000', 
-      'http://localhost:8080',
-      'https://eleven-clone-next.vercel.app'
-    ];
-    
-    if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      console.log('CORS blocked for origin:', origin);
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
+const corsOrigins = process.env.CORS_ORIGINS?.split(',') || ['http://localhost:3000', 'http://localhost:8080'];
+app.use(cors({
+  origin: corsOrigins,
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
-  optionsSuccessStatus: 200 // Some legacy browsers choke on 204
-};
-
-// Enable CORS with options
-app.use(cors(corsOptions));
-
-// Handle preflight requests
-app.options('*', cors(corsOptions));
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
 
 // Body parsing middleware
 app.use(express.json({ limit: '10mb' }));
