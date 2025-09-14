@@ -2,14 +2,14 @@ import mongoose from 'mongoose';
 
 export const connectDB = async (): Promise<void> => {
   try {
-    const mongoURI = process.env.MONGODB_URL;
+    const mongoURI = "mongodb+srv://neilseneasow:neilseneasow123@elevenlabs-clone.jqibrxm.mongodb.net/?retryWrites=true&w=majority&appName=elevenlabs-clone";
     
     if (!mongoURI) {
       throw new Error('MONGODB_URL environment variable is not defined');
     }
 
     const conn = await mongoose.connect(mongoURI, {
-      dbName: process.env.DATABASE_NAME || 'eleven_clone',
+      dbName: "eleven_clone",
     });
 
     console.log(`✅ Connected to MongoDB: ${conn.connection.host}`);

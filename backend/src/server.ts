@@ -1,4 +1,4 @@
-import express from "express";
+import express, { Request, Response } from "express";
 import cors from "cors";
 import helmet from "helmet";
 import morgan from "morgan";
@@ -8,6 +8,8 @@ import { errorHandler } from "./middleware/errorHandler";
 import audioRoutes from "./routes/audio";
 import onboardingRoutes from "./routes/onboarding";
 import authRoutes from "./routes/auth";
+
+
 
 // Load environment variables
 dotenv.config();
